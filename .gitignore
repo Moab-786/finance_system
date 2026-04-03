@@ -1,0 +1,8 @@
+venv/
+pycache/
+*.pyc
+.env
+finance.db
+test_finance.db
+.DS_Store
+commands.txt
