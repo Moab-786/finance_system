@@ -1,284 +1,213 @@
-# Finance Tracking System Backend
-![alt text](image.png)
-A FastAPI backend for managing financial transactions with role-based access control and analytics.
+# FinTrack - Personal Finance Management (Full Stack)
+
+![Project Screenshot](image.png)
+
+Full-stack finance tracking application with JWT authentication, role-based access control, analytics, CSV import/export, and a React dashboard.
+
+## Live Links
+
+- Frontend: add your Vercel URL here
+- Backend API: add your Render URL here
+- API Docs: your-backend-url/docs
+
+## Repository Structure
+
+- app: FastAPI backend source
+- alembic: database migrations
+- tests: backend test suite
+- finance-system-frontend: React frontend source
+- requirements.txt: backend dependencies
 
 ## Tech Stack
 
+### Backend
+
 - FastAPI
 - SQLAlchemy
+- Alembic
 - SQLite (default)
-- JWT authentication (`python-jose`)
-- Password hashing (`passlib` + `pbkdf2_sha256`)
-- Pytest for tests
-- Alembic for migrations
+- JWT auth (python-jose)
+- passlib with pbkdf2_sha256
+- Pytest
 
-## Features
+### Frontend
 
-- User registration and login
-- Access token + refresh token auth flow
-- Role-based access (`viewer`, `analyst`, `admin`)
-- Transaction CRUD
-- Transaction filtering, search, pagination, and sorting
-- CSV import/export for transactions
-- Analytics summary (income, expenses, balance, category and monthly totals)
-- Input validation and clear error responses
+- React
+- Vite
+- React Router
+- Axios
+- Chart.js with react-chartjs-2
+
+## Implemented Features
+
+- User signup and login
+- Access token and refresh token flow
+- Logout with token revocation
+- Role-based access: viewer, analyst, admin
+- Transaction CRUD with ownership rules
+- Filtering, search, sorting, pagination
+- CSV export and CSV import
+- Analytics summary:
+  - total income
+  - total expenses
+  - balance
+  - category breakdown
+  - monthly totals
+- Dashboard charts in frontend
+- Protected frontend routes
+- Auto token refresh in frontend API client
 
 ## Role Matrix
 
-- `viewer`
-  - Can view their own transactions
-- `analyst`
-  - Can view their own transactions
-  - Can access analytics summary
-- `admin`
-  - Can create, update, delete transactions
+- viewer:
+  - Can view only own transactions
+  - Cannot create, update, delete
+  - Cannot access analytics
+- analyst:
+  - Can view only own transactions
+  - Can access analytics
+  - Cannot create, update, delete
+- admin:
   - Can view all transactions
-  - Can access analytics summary
+  - Can create, update, delete
+  - Can access analytics
 
-## Setup
+## Local Setup
 
-1. Create and activate virtual environment:
+### 1. Clone and enter project
+
+```powershell
+git clone your_repo_url
+cd finance-system
+```
+
+### 2. Backend setup
 
 ```powershell
 python -m venv venv
 .\venv\Scripts\Activate
-```
-
-2. Install dependencies:
-
-```powershell
 pip install -r requirements.txt
-```
-
-3. Create env file:
-
-```powershell
 Copy-Item .env.example .env
-```
-
-4. Apply database migrations:
-
-```powershell
 alembic upgrade head
-```
-
-5. Run server:
-
-```powershell
 uvicorn app.main:app --reload
 ```
 
-6. Open API docs:
+Backend runs on:
 
-- Swagger UI: http://127.0.0.1:8000/docs
-- ReDoc: http://127.0.0.1:8000/redoc
+- http://127.0.0.1:8000
+- Swagger docs: http://127.0.0.1:8000/docs
 
-## Environment Variables
+### 3. Frontend setup
 
-See `.env.example`:
+```powershell
+cd finance-system-frontend
+npm install
+Copy-Item .env.example .env
+npm run dev
+```
 
-- `DATABASE_URL`
-- `SECRET_KEY`
-- `TOKEN_ALGORITHM`
-- `ACCESS_TOKEN_EXPIRE_MINUTES`
-- `DEFAULT_PAGE_SIZE`
-- `MAX_PAGE_SIZE`
+Frontend runs on:
+
+- http://localhost:5173
+
+Frontend environment variable:
+
+- VITE_API_URL=http://localhost:8000
+
+## Backend Environment Variables
+
+From `.env.example`:
+
+- DATABASE_URL
+- SECRET_KEY
+- TOKEN_ALGORITHM
+- ACCESS_TOKEN_EXPIRE_MINUTES
+- DEFAULT_PAGE_SIZE
+- MAX_PAGE_SIZE
 
 ## API Summary
 
 ### Auth
 
-- `POST /auth/register`
-- `POST /auth/login`
-- `POST /auth/refresh`
-- `POST /auth/logout`
+- POST /auth/register
+- POST /auth/login
+- POST /auth/refresh
+- POST /auth/logout
 
 ### Transactions
 
-- `POST /transactions/` (admin)
-- `GET /transactions/` (authenticated, role-aware visibility)
-- `GET /transactions/export` (authenticated, CSV download)
-- `POST /transactions/import` (admin, CSV upload)
-- `GET /transactions/{id}` (authenticated, ownership enforced for non-admin)
-- `PUT /transactions/{id}` (admin)
-- `DELETE /transactions/{id}` (admin)
+- POST /transactions/ (admin)
+- GET /transactions/
+- GET /transactions/export
+- POST /transactions/import (admin)
+- GET /transactions/{id}
+- PUT /transactions/{id} (admin)
+- DELETE /transactions/{id} (admin)
 
-`GET /transactions/` supports:
+GET /transactions/ supports:
 
-- `type`
-- `category`
-- `categories` (comma-separated)
-- `search` (category/notes)
-- `amount_min`, `amount_max`
-- `from_date`, `to_date`
-- `skip`, `limit`
-- `sort_by` (`id`, `date`, `amount`, `category`, `type`)
-- `sort_order` (`asc`, `desc`)
+- type
+- category
+- categories
+- search
+- amount_min, amount_max
+- from_date, to_date
+- skip, limit
+- sort_by: id, date, amount, category, type
+- sort_order: asc, desc
 
 ### Analytics
 
-- `GET /analytics/summary` (analyst/admin)
+- GET /analytics/summary (analyst, admin)
 
 ## Testing
 
-Run all tests:
+Run tests from project root:
 
 ```powershell
-pytest -v
+.\venv\Scripts\python.exe -m pytest -q
 ```
 
-Run with coverage (optional):
-
-```powershell
-pytest --cov=app --cov-report=term-missing
-```
+Current status: 15 tests passing.
 
 ## Database Migrations
 
-Alembic is configured for schema migrations.
-
-Create a migration after model changes:
-
 ```powershell
 alembic revision --autogenerate -m "describe change"
-```
-
-Apply migrations:
-
-```powershell
 alembic upgrade head
-```
-
-If you already have a local SQLite database created by the app startup code, align Alembic with the existing schema first:
-
-```powershell
-alembic stamp head
-```
-
-Rollback one migration:
-
-```powershell
 alembic downgrade -1
 ```
 
-## Assumptions
+## Deployment Notes
 
-- Admin has global visibility and write access.
-- Viewer and analyst are read-only for transactions and restricted to their own records.
-- Analytics is available only to analyst/admin.
-- SQLite is used by default for local simplicity.
+### Backend (Render)
 
-## Usage Steps
-Open [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) and follow this order.
+- Root directory: repository root
+- Start command:
 
-1. Register users first
-- Expand `POST /auth/register`
-- Create one `viewer`, one `analyst`, and one `admin`
-- Keep the credentials simple so you can reuse them in later requests
-
-2. Log in each user
-- Expand `POST /auth/login`
-- Use the username/password form
-- Copy the `access_token` from the response
-- In Swagger, click `Authorize` and paste `Bearer <token>`
-
-3. Test transaction creation
-- Use the admin token
-- Call `POST /transactions/`
-- Try a normal payload like:
-```json
-{
-  "amount": 1500,
-  "type": "income",
-  "category": "salary",
-  "notes": "monthly pay"
-}
-```
-- Confirm admin can create successfully
-- Then try the same as viewer/analyst and confirm it is blocked
-
-4. Test transaction listing and filtering
-- Use `GET /transactions/`
-- As viewer or analyst, confirm you only see your own records
-- Try filters one by one:
-- `type=income`
-- `category=salary`
-- `search=pay`
-- `amount_min=100`
-- `amount_max=2000`
-- `skip=0&limit=5`
-- `sort_by=date&sort_order=desc`
-
-5. Test single-record ownership
-- Use `GET /transactions/{id}`
-- As a different non-admin user, try to open someone else’s transaction
-- Confirm you get `403`
-- As admin, confirm you can view any transaction
-
-6. Test update and delete
-- Use the admin token
-- Call `PUT /transactions/{id}` with a small change
-- Call `DELETE /transactions/{id}`
-- Confirm the record is updated or removed
-
-7. Test analytics
-- Use the analyst token
-- Call `GET /analytics/summary`
-- Confirm you get totals, category breakdown, monthly totals, and recent activity
-- Try with viewer token and confirm it is blocked
-
-8. Test token refresh and logout
-- Use `POST /auth/login`
-- Save both access and refresh tokens
-- Call `POST /auth/refresh` with the refresh token
-- Call `POST /auth/logout` with the access token
-- Try the old access token again and confirm it is rejected
-
-9. Test CSV import/export
-- Use admin token
-- Call `GET /transactions/export` and confirm a CSV download
-- Call `POST /transactions/import` with a CSV file like:
-```csv
-amount,type,category,date,notes
-100,income,salary,2026-01-01T10:00:00,bonus
-25,expense,food,2026-01-02T12:00:00,lunch
-```
-- Confirm it imports and shows up in `GET /transactions/`
-
-10. Run automated tests
-- From the project root, run:
 ```powershell
-pytest -q
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
 ```
-- You should see all tests pass
 
+- Set backend environment variables from `.env.example`
+- Update CORS allow_origins in `app/main.py` with your real frontend domain
 
+### Frontend (Vercel)
 
-## **Project Tour**
+- Root directory: finance-system-frontend
+- Build command: npm run build
+- Output directory: dist
+- Environment variable:
 
-At a high level, the app is split into five layers: app startup, database/config, auth, business rules, and route handlers. The main entry point is main.py, which wires in the routers and exposes the root endpoint. The data models live in models.py, the request/response contracts in schemas.py, and the shared auth/database helpers in auth.py, dependencies.py, database.py, and config.py.
+```text
+VITE_API_URL=your_backend_url
+```
 
-The backend flow is:
-1. User registers or logs in through auth.py.
-2. Auth helpers create and verify tokens in auth.py.
-3. Dependency guards in dependencies.py enforce whether the request is from a valid user, analyst, or admin.
-4. Transaction CRUD and filters are handled in transactions.py.
-5. Analytics summary is generated in analytics.py.
+## Final Submission Checklist
 
-**What each part does**
-
-- models.py: Defines the database tables for users and transactions, including roles, ownership, timestamps, and the transaction type enum.
-- schemas.py: Validates incoming payloads and shapes outgoing responses. This is where the amount/date/category rules live.
-- auth.py: Hashes passwords, creates JWTs, refreshes tokens, and handles token revocation.
-- dependencies.py: Figures out the current user from the bearer token and blocks unauthorized access.
-- auth.py: Register, login, refresh, and logout endpoints.
-- transactions.py: Create, list, export, import, update, delete, and single-record access for transactions.
-- analytics.py: Returns the finance summary.
-- database.py: Creates the SQLAlchemy engine/session and reads the database URL from env settings.
-- config.py: Loads environment variables and provides the app settings.
-- alembic/: Database migration setup.
-- tests/: Automated coverage for auth, transactions, analytics, and optional endpoints.
-
-**How it fits together in practice**
-
-If you log in, the app returns tokens from auth.py. Those tokens are checked by dependencies.py whenever you hit protected routes. If you create a transaction, transactions.py uses schemas.py to validate the payload, models.py to save it, and database.py to talk to SQLite or another configured database. Analytics reads the same transaction data and aggregates it in analytics.py.
+- GitHub repository is clean and up to date
+- README includes backend and frontend setup
+- Backend deployed successfully
+- Frontend deployed successfully
+- Live website link works
+- API docs link works
