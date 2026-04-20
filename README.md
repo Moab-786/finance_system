@@ -8,9 +8,9 @@ Full-stack finance tracking application with JWT authentication, role-based acce
 
 ## Live Links
 
-- Frontend: add your Vercel URL here
-- Backend API: add your Render URL here
-- API Docs: your-backend-url/docs
+- Frontend: https://finance-system-tau-one.vercel.app/
+- Backend API: https://finance-system-yhdh.onrender.com
+- API Docs: https://finance-system-yhdh.onrender.com/docs
 
 ## Repository Structure
 

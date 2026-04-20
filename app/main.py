@@ -7,7 +7,7 @@ app = FastAPI(title="Finance Tracking System", version="1.0.0")
 allowed_origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://your-frontend-domain.vercel.app",
+    "https://finance-system-tau-one.vercel.app",
 ]
 
 app.add_middleware(
