@@ -1,5 +1,7 @@
 # FinTrack - Personal Finance Management (Full Stack)
 
+![Project Screenshot](image1.png)
+![Project Screenshot](image2.png)
 ![Project Screenshot](image.png)
 
 Full-stack finance tracking application with JWT authentication, role-based access control, analytics, CSV import/export, and a React dashboard.
